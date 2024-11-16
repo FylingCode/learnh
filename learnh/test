@@ -1,0 +1,110 @@
+<?php
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST'){
+     $name = $_POST['name'];
+     $email = $_POST['email'];
+     $desc = $_POST['desc'];
+     
+
+// connection
+$servername = "localhost";
+$username = "root";
+$password = "";
+$database = "contact";
+
+
+$conn = mysqli_connect($servername, $username,$password,$database);
+
+if(!$conn){
+    die("sorry connetion not found" . mysqli_connect_error());
+}else{
+   // echo "successfully connection to database";
+
+
+// insert data
+$sql = "INSERT INTO contactus (name, email, concern) 
+VALUES ('$name', '$email', '$desc')";
+
+// Execute the query
+if (mysqli_query($conn, $sql)) {
+    echo '<div class="alert alert-success alert-dismissible fade show" role="alert">
+   <strong>Submitted Successfully</strong>
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>';
+} else {
+   // echo "Error inserting into database: " . mysqli_error($conn);
+   echo '<div class="alert alert-danger alert-dismissible fade show" role="alert">
+   <strong>Submission Failed !! Sorry we are facing some problem</strong>
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>';
+}
+
+}
+// Close the connection
+mysqli_close($conn);
+
+}
+
+// submit to database
+
+
+?>
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+<?php
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+
+    // Check if the required fields are set and not empty
+    if (isset($_POST['name'], $_POST['email'], $_POST['desc']) && !empty($_POST['name']) && !empty($_POST['email']) && !empty($_POST['desc'])) {
+
+        // Sanitize user input
+        $name = $_POST['name'];
+        $email = $_POST['email'];
+        $desc = $_POST['desc'];
+
+        // Connection settings
+        $servername = "localhost";
+        $username = "root";
+        $password = "";
+        $database = "contact";
+
+        // Create connection
+        $conn = mysqli_connect($servername, $username, $password, $database);
+
+        // Check connection
+        if (!$conn) {
+            die("Connection failed: " . mysqli_connect_error());
+        }
+
+        // Prepare the SQL query
+        $stmt = $conn->prepare("INSERT INTO contactus (name, email, concern) VALUES (?, ?, ?)");
+        $stmt->bind_param("sss", $name, $email, $desc); // "sss" means all are strings
+
+        // Execute the query
+        if ($stmt->execute()) {
+            echo '<div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <strong>Submitted Successfully</strong>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                  </div>';
+        } else {
+            echo '<div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <strong>Submission Failed! Sorry, we are facing some problem.</strong>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                  </div>';
+        }
+
+        // Close the statement and connection
+        $stmt->close();
+        mysqli_close($conn);
+
+    } else {
+        echo '<div class="alert alert-warning alert-dismissible fade show" role="alert">
+                <strong>Please fill in all fields!</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>';
+    }
+}
+?>
